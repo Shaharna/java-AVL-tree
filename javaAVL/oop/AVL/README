@@ -1,0 +1,164 @@
+shaharna13
+
+yael.sarusi
+
+
+
+=============================
+=      File description     =
+=============================
+- BinarySearchTree.java -
+  This is an implementation of a basic Binary search Tree.
+  A binary search tree has a root node.
+  The Binary search trees support three main operations: insertion of elements, deletion of elements, and
+  lookup (checking whether a key is present).
+
+- AvlTree.java -
+  This class is the complete and tested implementation of an AVL-tree.
+
+- Node.java -
+  This class is the complete and tested implementation of an Node.
+
+- BinarySearchTreeIterator.java -
+  This is an implementation of the Binary Search tree Iterator.
+
+=============================
+=          Design           =
+=============================
+Most of our design was based on the fact that an Avl tree is a kind of a Binary Search Tree, and therefor
+we've tried to implement most of the functions in the BST class, but there are some functions we preferred to
+put in the Avl class as NOT all the BST trees are balanced the same way, FOR EXAMPLE the balancing of a red
+black tree should be made differently as the conditions on the tree are different. So we decided to make
+those functions in the AvlTree class.
+
+We were asked to make the class general for a BST tree rather then a balanced one and therefore the balance
+functions are not abstract as a binary Search tree can be unbalances in its dry definition.
+
+BinarySearchTree is an abstract class as it represents all the basic actions in the binaryTree.
+However each type of binary tree will implement delete and add differently, as the AvlTRee needs to
+consider the balance factor. A basic binary tree will add data without checking for duplications,
+a binary tree set will not allow duplicates. All the different optional implements will need different
+delete and add functions therefor they are abstract, and the class itself is abstract
+
+FurtherMore, most of our methods are package private as we considered that that the package data_structure as
+we can get from her name will contain all the relevant data structures and therefore no public methods are
+needed in the Binary Search Tree class and Node class (except for the ones shown in the API).
+
+Another importation detail is the fact that we maid the node as we did, meaning we haven't implemented it
+as a nested call but as a regular class. The idea behind that is the fact that node does have only
+one meaning (as a part of a tree) but it is an object that has a meaning regardless of the tree.
+In the same matter, we chose to make the Binary Search Iterator a nested class as it has no meaning without
+theBinary Search object itself.
+
+
+- The binary search tree has an iterator, that returns the data in ascending order.
+
+- All types of binary trees hold a node as a data member, it is the root of the tree they represent.
+
+- The AvlTree we've implemented holds a Node<Integer> type as the root, as the data it holds is a int.
+
+=============================
+=  Implementation details   =
+=============================
+1. findNode method in the BinarySearchTree class:
+   This function receives an int and returns the node containing the data given,if it exists in the tree.
+   Otherwise it will return the parent of where the node should be in the tree.
+   This function helps prevent double code. When searching for a node to delete, or if the tree contains
+   a data given, or even when inserting a new node, all functions start the same - search for the nodes'
+   location. This function does the search for us, then each function takes the pointer and deals with it as
+   needed.
+
+2. Node class functions:
+    - GetHeight:
+      Calculates the node's height, recursively.
+      The tree rotations relays heavily on the nodes's height. When rotating, all the node's rotated change
+      height. With no way knowing if a node was rotated (as the rotation could be of a result of changing
+      it's parent's pointers), having a "height" data member takes calculating and saving each node for each
+      sub-tree rooted from all the changed pointers.
+      We chose alternatively to calculate the height each time the height is needed, this way we are sure it
+      is correct with no need of maintaining data fields that we may or may not need (before they change
+      again).
+    - GetDepth:
+      This function calculates the node's depth from the root of the tree. This is not a recursive function,
+      it only counts the nodes up until we reach a node with no parent (that is the root).
+
+3. AvlTree class functions:
+    - RotateLeft, RotateRight:
+      Both functions change the pointers according to the mathematical theory we've learned in DUST.
+    - BalanceTree, getBalanceCase:
+      BalanceTree function receives the last node to be added to the tree and goes up to the root. As it goes
+      up it checks for unbalanced heights, and rotates the nodes when needed.
+      BalanceTree uses the function getBalanceCase to determine which rotate (if any) is needed to fix the
+      tree).
+
+As we've mentioned above all the balance and rotation implementations were made in the Avl class as 
+=============================
+=    Answers to questions   =
+=============================
+5.1 Analyzing the AVL tree
+-------------------------------------------------
+1. Adding the following int ont by one will result in a tree of height 4:
+30, 20, 50, 10, 15, 60, 40, 70, 65, 45, 0, 80
+The tree will be as follows:
+               30
+              / \
+             /   \
+            /     \
+           /       \
+          /         \
+         /           \
+        /             \
+       /               \
+       15               50
+      / \             / \
+     /   \           /   \
+    /     \         /     \
+   /       \       /       \
+   10       20       40       65
+  /                 \     / \
+ /                   \   /   \
+ 0                   45   60   70
+                              \
+                              80
+
+Notice the node "80" that is in height 4.
+
+5.2 The complexity of constructing an AVL tree
+-------------------------------------------------
+1. In our solution when receiving the data in an unsorted int array, we are adding each data ony by one.
+- Finding the node's location takes logn (the height of the tree) - for the last int in the array.
+- Adding the data is O(1).
+- Going up the node's to the root is logn (the height of the tree) - for the last int in the array.
+- Rotating if needed is O(1).
+- Rebalancing is O(log(n)) - as we go up from the given node to the root and each rotating is O(1).
+- n nodes in the array.
+A total of T(n) = n(2logn + 2O(1)) = O(nlogn)
+
+2. Best case is when the array is sorted. Then we can recursively create the avlNodes in the correct order
+using the following strategy:
+We will apply a recursive function call create_AVL, which receives a sorted array, returns an AVL
+tree. For a given array A of length n, the median of the array will be the root of a tree. The left sub
+tree of the root will be a recursive call to create_AVL on A[1,…,median-1] and the right sub tree of the
+root will be a recursive call to create_AVL on A[median+1,…,n].
+This will result a running time of O(n).
+
+5.3 The complexity of copying an AVL tree
+-------------------------------------------------
+1. Our solution for creating the AVL tree from an existing AvlNode, is a recursive Node constructor, which
+receives a Node and creates it's left and right children nodes with the Node constructor. That way we run over
+each node once, working with a running time of O(n).
+
+2. Linear time is the lower asymptotic bound for the copy constructor, because each and everyone of the nodes
+in the tree must be visited at least once to copy it's data and check for it's existing children and copy them
+as well.
+Because our solution already constructs the tree with a running time of O(n), this is already the
+best running time, regardless of it's input.
+It's important to note that this constructor doesn't need to check for data duplication within the tree,
+because the AvlTree already doesn't hold duplicated data.
+
+5.4 The complexity of calculating the minimal number of nodes in an AVL tree of a given height
+-------------------------------------------------
+1. Our asymptotic bound in the implementation of the findMinNodes(h) is O(1) as it uses a formula that
+was proven in other class we've taken.
+
+2. It is the best one as it spare both time and space.
